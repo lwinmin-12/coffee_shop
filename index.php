@@ -1,5 +1,25 @@
 <?php require_once "template/header.php"; ?>
 
+<?php 
+    session_start();
+    
+    if(!empty($_SESSION['status'])){
+        echo alert($_SESSION['status']['message'], $_SESSION['status']['color']);
+        $_SESSION['status'] = null;
+    }
+
+    $products =$conn->query("SELECT * FROM products LIMIT 4");
+    $products->execute();
+
+    $allProducts = $products->fetchAll(PDO::FETCH_OBJ);
+
+    $review = $conn->query("SELECT * FROM reviews");
+    $review->execute();
+
+    $allReviews = $review->fetchAll(PDO::FETCH_OBJ);
+
+
+?>
 <section class="home-slider owl-carousel">
     <div class="slider-item" style="background-image: url(images/bg_1.jpg);">
         <div class="overlay"></div>
@@ -48,8 +68,8 @@
             </div>
         </div>
     </div>
+    
 </section>
-
 
 <section class="ftco-intro">
     <div class="container-wrap">
@@ -183,7 +203,7 @@
                     <span class="subheading">Discover</span>
                     <h2 class="mb-4">Our Menu</h2>
                     <p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
-                    <p><a href="#" class="btn btn-primary btn-outline-primary px-4 py-3">View Full Menu</a></p>
+                    <p><a href="<?= url('menu.php')?>" class="btn btn-primary btn-outline-primary px-4 py-3">View Full Menu</a></p>
                 </div>
             </div>
             <div class="col-md-6">
@@ -266,56 +286,27 @@
     <div class="container">
         <div class="row justify-content-center mb-5 pb-3">
             <div class="col-md-7 heading-section ftco-animate text-center">
-                <span class="subheading">Discover</span>
+                <span class="subheading py-4">Discover</span>
                 <h2 class="mb-4">Best Coffee Sellers</h2>
                 <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
             </div>
         </div>
         <div class="row">
+
+            <?php foreach($allProducts as $ea) : ?>
+
             <div class="col-md-3">
                 <div class="menu-entry">
-                    <a href="#" class="img" style="background-image: url(images/menu-1.jpg);"></a>
+                    <a target="_blank" href="<?= url("images/$ea->image") ?>" class="img" style="background-image: url(<?= url("images/$ea->image") ?>);"></a>
                     <div class="text text-center pt-4">
-                        <h3><a href="#">Coffee Capuccino</a></h3>
-                        <p>A small river named Duden flows by their place and supplies</p>
-                        <p class="price"><span>$5.90</span></p>
-                        <p><a href="#" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
+                        <h3><a href="#"><?= $ea->name ?></a></h3>
+                        <p><?= $ea->description ?></p>
+                        <p class="price"><span>$<?= $ea->price ?></span></p>
+                        <p><a href="<?= url("products/productSingle.php?id=$ea->id") ?>" class="btn btn-primary btn-outline-primary px-3 py-2">Add to Cart</a></p>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="menu-entry">
-                    <a href="#" class="img" style="background-image: url(images/menu-2.jpg);"></a>
-                    <div class="text text-center pt-4">
-                        <h3><a href="#">Coffee Capuccino</a></h3>
-                        <p>A small river named Duden flows by their place and supplies</p>
-                        <p class="price"><span>$5.90</span></p>
-                        <p><a href="#" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="menu-entry">
-                    <a href="#" class="img" style="background-image: url(images/menu-3.jpg);"></a>
-                    <div class="text text-center pt-4">
-                        <h3><a href="#">Coffee Capuccino</a></h3>
-                        <p>A small river named Duden flows by their place and supplies</p>
-                        <p class="price"><span>$5.90</span></p>
-                        <p><a href="#" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="menu-entry">
-                    <a href="#" class="img" style="background-image: url(images/menu-4.jpg);"></a>
-                    <div class="text text-center pt-4">
-                        <h3><a href="#">Coffee Capuccino</a></h3>
-                        <p>A small river named Duden flows by their place and supplies</p>
-                        <p class="price"><span>$5.90</span></p>
-                        <p><a href="#" class="btn btn-primary btn-outline-primary">Add to Cart</a></p>
-                    </div>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
@@ -368,20 +359,22 @@
     </div>
     <div class="container-wrap">
         <div class="row d-flex no-gutters">
-            <div class="col-lg align-self-sm-end ftco-animate">
+            <?php foreach($allReviews as $ea) : ?>
+            <div class="col-md-3 align-self-sm-end ftco-animate">
                 <div class="testimony">
                     <blockquote>
-                        <p>&ldquo;Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small.&rdquo;</p>
+                        <p>&ldquo;<?= $ea->review ?>&rdquo;</p>
                     </blockquote>
                     <div class="author d-flex mt-4">
                         <div class="image mr-3 align-self-center">
                             <img src="<?= url("images/person_2.jpg") ?>" alt="">
                         </div>
-                        <div class="name align-self-center">Louise Kelly <span class="position">Illustrator Designer</span></div>
+                        <div class="name align-self-center"><?= $ea->username ?> <span class="position">Illustrator Designer</span></div>
                     </div>
                 </div>
             </div>
-            <div class="col-lg align-self-sm-end">
+            <?php endforeach;?>
+            <!-- <div class="col-lg align-self-sm-end">
                 <div class="testimony overlay">
                     <blockquote>
                         <p>&ldquo;Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar.&rdquo;</p>
@@ -432,7 +425,7 @@
                         <div class="name align-self-center">Louise Kelly <span class="position">Illustrator Designer</span></div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </section>

@@ -38,7 +38,7 @@ require_once dirname(__DIR__). "/core/config.php";
     <link rel="stylesheet" href="<?= url('css/icomoon.css') ?>">
     <link rel="stylesheet" href="<?= url('css/style.css') ?>">
   </head>
-  <body>
+  <body >
 
 
 <?php require_once "navbar.php"; ?>

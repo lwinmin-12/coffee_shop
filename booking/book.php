@@ -1,14 +1,18 @@
 <?php
+session_start();
 
 require_once dirname(__DIR__)."/template/header.php";
 
 if(!isset($_SESSION['user_id'])){
-    echo "<script> alert('you need to login') </script>";
+    $_SESSION['status'] = [
+        'message' => 'you need to login',
+        'color' => 'danger'
+    ];
+        header("location:" .url("index.php"));
 }
 
 global $conn;
-// print_r($_SESSION['user_id']);
-var_dump($conn);
+
 
 if(isset($_POST['submit'])) {
 
@@ -19,9 +23,13 @@ if(isset($_POST['submit'])) {
         empty($_POST['time']) OR
         empty($_POST['phone']) OR
         empty($_POST['message']) 
-        // empty($_POST['user_id'])
     ){
-        echo "<script> alert('You need fill firt inputs') </script>";
+        $_SESSION['status'] = [
+            'message' => 'you need to fill inputs',
+            'color' => 'danger'
+        ];
+            header("location:" .url("index.php"));
+        
     }else{
 
         $first_name = $_POST['first_name'];
@@ -32,38 +40,43 @@ if(isset($_POST['submit'])) {
         $phone = $_POST['phone'];
         $user_id = $_SESSION["user_id"];
 
-        if($date > date("n/j/Y")){
+        if(strtotime($date) > strtotime(date("n/j/Y"))){
             $query = $conn -> prepare("INSERT INTO bookings (
                 first_name ,last_name,date , time ,phone , message, user_id
                 ) VALUES (
                 :first_name, :last_name , :date ,  :time , :phone , :message , :user_id
             )");
 
-            try {
-                $query->execute ([
-                    ":first_name" =>$first_name,
-                    ":last_name" =>$last_name,
-                    ":date" =>$date,
-                    ":time" =>$time,
-                    ":phone" =>$phone,
-                    ":message" =>$message,
-                    ":user_id" =>$user_id,
-                ]);
-            
-                echo "<script>alert('successfully')</script>";
-            } catch (PDOException $e) {
-                echo "Error: " . $e->getMessage(); // Display the SQL error message
-            }
+            $query->execute ([
+                ":first_name" =>$first_name,
+                ":last_name" =>$last_name,
+                ":date" =>$date,
+                ":time" =>$time,
+                ":phone" =>$phone,
+                ":message" =>$message,
+                ":user_id" =>$user_id,
+            ]);
+        
+            $_SESSION['status'] = [
+                'message' => 'Tabale booked succeccfully',
+                
+            ];
+                header("location:" .url("index.php"));
             
 
 
         }else{
-            echo "<script> alert('You can't choose a date in the past) </script>";
+            $_SESSION['status'] = [
+            'message' => 'You cannot choose a date in the past'
+        ];
+            header("location:" .url("index.php"));
         }
 
 
     }
 }else{
-    echo "<script> alert('You need fill inputs') </script>";
-
+    $_SESSION['status'] = [
+        'message' => 'You need to fill inputs'
+    ];
+        header("location:" .url("index.php"));
 }
