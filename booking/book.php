@@ -11,7 +11,7 @@ if(!isset($_SESSION['user_id'])){
         header("location:" .url("index.php"));
 }
 
-global $conn;
+// global $conn;
 
 
 if(isset($_POST['submit'])) {
@@ -24,11 +24,8 @@ if(isset($_POST['submit'])) {
         empty($_POST['phone']) OR
         empty($_POST['message']) 
     ){
-        $_SESSION['status'] = [
-            'message' => 'you need to fill inputs',
-            'color' => 'danger'
-        ];
-            header("location:" .url("index.php"));
+        echo "<script> alert('You need fill inputs') </script>";
+      
         
     }else{
 
@@ -57,17 +54,16 @@ if(isset($_POST['submit'])) {
                 ":user_id" =>$user_id,
             ]);
         
-            $_SESSION['status'] = [
-                'message' => 'Tabale booked succeccfully',
-                
-            ];
+            echo "<script> alert('bookings succcssfull') </script>";
+
                 header("location:" .url("index.php"));
             
 
 
         }else{
             $_SESSION['status'] = [
-            'message' => 'You cannot choose a date in the past'
+            'message' => 'You cannot choose a date in the past',
+            'color' => 'danger'
         ];
             header("location:" .url("index.php"));
         }
